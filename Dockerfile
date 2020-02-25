@@ -1,8 +1,8 @@
 FROM ripl/libbot2-ros:latest
 
 # set the version of the realsense library
-ENV LIBREALSENSE_VERSION 2.16.1
-ENV LIBREALSENSE_ROS_VERSION 2.1.0
+ENV LIBREALSENSE_VERSION 2.28.1
+ENV LIBREALSENSE_ROS_VERSION 2.2.8
 
 # set working directory
 RUN mkdir -p /code
@@ -38,15 +38,43 @@ RUN cd /tmp && \
   make install && \
   rm -rf librealsense-${LIBREALSENSE_VERSION}
 
+RUN  apt-get update && \
+  apt-get install ros-kinetic-ddynamic-reconfigure
+
 # install ROS package
 RUN mkdir -p /code/src && \
   cd /code/src/ && \
   wget https://github.com/intel-ros/realsense/archive/${LIBREALSENSE_ROS_VERSION}.tar.gz && \
   tar -xvzf ${LIBREALSENSE_ROS_VERSION}.tar.gz && \
   rm ${LIBREALSENSE_ROS_VERSION}.tar.gz && \
-  mv realsense-${LIBREALSENSE_ROS_VERSION}/realsense2_camera ./ && \
-  rm -rf realsense-${LIBREALSENSE_ROS_VERSION}
+  mv realsense-ros-${LIBREALSENSE_ROS_VERSION}/realsense2_camera ./ && \
+  mv realsense-ros-${LIBREALSENSE_ROS_VERSION}/realsense2_description ./ && \
+  rm -rf realsense-ros-${LIBREALSENSE_ROS_VERSION}
+
+
+RUN /bin/bash -c 'cd /code/src/ && \
+    git clone https://github.com/IntelRealSense/realsense-ros.git  && \
+    cd realsense-ros && \
+    git checkout occupancy-mapping && \
+    cd .. && \
+    mv realsense-ros/occupancy ./ && \
+    mv realsense-ros/realsense2_camera/urdf/mount_t265_d435.urdf.xacro realsense2_description/urdf/ && \
+    rm -rf realsense-ros'
+
 
 # build ROS package
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
   catkin build
+
+RUN apt-get update && apt-get install -y \
+    ros-kinetic-xacro
+
+WORKDIR /
+
+COPY launch-files /launch-files
+COPY run-shells /run-shells
+
+ENV ROS_MASTER_URI "http://ros-master:11311"
+
+CMD ["bash"]
+
