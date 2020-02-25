@@ -12,7 +12,7 @@
   <arg name="depth_width"               default="640"/>
   <arg name="depth_height"              default="480"/>
   <arg name="clip_distance"             default="-2"/>
-  <arg name="topic_odom_in"             default="odom_in"/>
+  <arg name="topic_odom_in"             default="odom"/>
   <arg name="calib_odom_file"           default=""/>
   <rosparam>
     /t265/tracking_module/enable_pose_jumping: false
@@ -52,6 +52,8 @@
     </include>
   </group>
 
-  <param name="robot_description" command="$(find xacro)/xacro.py '$(find realsense2_camera)/urdf/mount_t265_d435.urdf.xacro' tf_prefix_camera1:=$(arg tf_prefix_camera1) tf_prefix_camera2:=$(arg tf_prefix_camera2)" />
+  <param name="/mobility_base/robot_description" command="$(find xacro)/xacro '$(find realsense2_description)/urdf/mount_t265_d435.urdf.xacro' tf_prefix_camera1:=$(arg tf_prefix_camera1) tf_prefix_camera2:=$(arg tf_prefix_camera2)" />
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_to_d435_link" args="0 0 0 0 0 0 1 /base /d435_link" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_to_t265_link" args="0 0 0 0 0 0 1 /base /t265_link" />
 </launch>

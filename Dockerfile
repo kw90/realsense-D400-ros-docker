@@ -71,10 +71,12 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /
 
+COPY entrypoint.sh .
 COPY launch-files /launch-files
 COPY run-shells /run-shells
 
-ENV ROS_MASTER_URI "http://ros-master:11311"
+ENTRYPOINT ["/entrypoint.sh"]
+ENV ROS_MASTER_URI="http://ros-master:11311"
 
 CMD ["bash"]
 

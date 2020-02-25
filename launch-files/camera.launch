@@ -1,5 +1,5 @@
 <launch>
-    <include file="/launch-files/rs_d435_and_t265.launch">
+    <include file="/launch-files/rs_d435.launch">
       <!-- <arg name="serial_no_camera1" value="905312110161"/>
       <arg name="serial_no_camera2" value="826212070847"/> -->
       <arg name="camera1"              			default="t265"/>
